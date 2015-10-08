@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="ModulTest.ViewBufferTest"
+             x:Name="ViewADCBuffer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ModulTest"
+             xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
+             Loaded="UserControl_Loaded"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.DataContext>
+        <local:SerialConnTest/>
+    </UserControl.DataContext>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.ADC1Command}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="ADC1GetBuffer_Executed"/>
+    </UserControl.CommandBindings>    
+    <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+                <Label>Test</Label>
+            </StackPanel>
+            <StackPanel Margin="0,0,10,10"  DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Margin="3">Read ADC1 Buffer</Button>
+                <Button Margin="3">Read ADC2 Buffer</Button>
+            </StackPanel>
+            <Grid Name="grdView">
+                <Controls:MetroProgressBar Margin="20,0" MaxWidth="500"></Controls:MetroProgressBar>
+                <oxy:Plot x:Name="Plot1" Title="ADC Values" Margin="10"
+                          PlotAreaBorderColor="AliceBlue" 
+                          TextColor="AliceBlue" 
+                          Foreground="Orange"                          
+                          Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=Background}">
+                    <oxy:Plot.Axes>
+                        <oxy:LinearAxis Position="Bottom" TicklineColor="AliceBlue"/>
+                        <oxy:LinearAxis Position="Left" TicklineColor="AliceBlue"/>
+                    </oxy:Plot.Axes>
+                    <oxy:Plot.Series>
+                        <oxy:LineSeries Title="ADC1" Color="YellowGreen" StrokeThickness="2"
+                        DataFieldX="Time"
+                        DataFieldY="Voltage"
+                        ItemsSource="{Binding Path=ADC1Values}"
+                        />
+                    </oxy:Plot.Series>
+                </oxy:Plot>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>

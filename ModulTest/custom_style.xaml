@@ -1,0 +1,72 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--ACCENT COLORS-->
+    <Color x:Key="HighlightColor">#FF086F9E</Color>
+
+    <!--80%-->
+    <Color x:Key="AccentColor">#CC119EDA</Color>
+    <!--60%-->
+    <Color x:Key="AccentColor2">#99119EDA</Color>
+    <!--40%-->
+    <Color x:Key="AccentColor3">#66119EDA</Color>
+    <!--20%-->
+    <Color x:Key="AccentColor4">#33119EDA</Color>
+
+    <!--BASE COLORS-->
+    <Color x:Key="BlackColor">#FFFFFFFF</Color>
+    <Color x:Key="WhiteColor">#FF252525</Color>
+
+    <Color x:Key="Gray1">#FFF9F9F9</Color>
+    <Color x:Key="Gray2">#FF7F7F7F</Color>
+    <Color x:Key="Gray7">#FF7E7E7E</Color>
+    <Color x:Key="Gray8">#FF454545</Color>
+    <Color x:Key="Gray10">#FF2F2F2F</Color>
+
+    <Color x:Key="GrayNormal">#FF7D7D7D</Color>
+    <Color x:Key="GrayHover">#99119EDA</Color>
+    <Color x:Key="FlyoutColor">#FF2B2B2B</Color>
+
+    <SolidColorBrush x:Key="Test" Color="#FFAAAAAA" />
+
+    <SolidColorBrush x:Key="GrayNormalBrush" Color="{StaticResource GrayNormal}"  />
+    <SolidColorBrush x:Key="GrayHoverBrush" Color="{StaticResource GrayHover}"  />
+
+    <!-- re-set brushes too -->
+    <SolidColorBrush x:Key="HighlightBrush" Color="{StaticResource HighlightColor}" />
+    <SolidColorBrush x:Key="AccentColorBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentColorBrush2" Color="{StaticResource AccentColor2}"/>
+    <SolidColorBrush x:Key="AccentColorBrush3" Color="{StaticResource AccentColor3}"/>
+    <SolidColorBrush x:Key="AccentColorBrush4" Color="{StaticResource AccentColor4}"/>
+
+    <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{StaticResource AccentColor}" />
+    <!--<SolidColorBrush x:Key="WindowTitleColorBrush" Color="#CC2C627C" />-->
+
+    <SolidColorBrush x:Key="AccentSelectedColorBrush" Color="White" />
+
+    <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+        <GradientStop Color="{StaticResource HighlightColor}" Offset="0" />
+        <GradientStop Color="{StaticResource AccentColor3}" Offset="1" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="CheckmarkFill" Color="{StaticResource AccentColor}" />
+    <SolidColorBrush x:Key="RightArrowFill" Color="{StaticResource AccentColor}" />
+
+    <Color x:Key="IdealForegroundColor">White</Color>
+    <SolidColorBrush x:Key="IdealForegroundColorBrush" Color="{StaticResource IdealForegroundColor}"/>
+
+    <SolidColorBrush x:Key="GrayBrush1" Color="{DynamicResource Gray1}"/>
+    <SolidColorBrush x:Key="GrayBrush2" Color="{DynamicResource Gray2}"/>
+    <SolidColorBrush x:Key="GrayBrush3" Color="{DynamicResource Gray3}"/>
+    <SolidColorBrush x:Key="GrayBrush4" Color="{DynamicResource Gray4}"/>
+    <SolidColorBrush x:Key="GrayBrush5" Color="{DynamicResource Gray5}"/>
+    <SolidColorBrush x:Key="GrayBrush6" Color="{DynamicResource Gray6}"/>
+    <SolidColorBrush x:Key="GrayBrush7" Color="{DynamicResource Gray7}"/>
+    <SolidColorBrush x:Key="GrayBrush8" Color="{DynamicResource Gray8}"/>
+    <SolidColorBrush x:Key="GrayBrush9" Color="{DynamicResource Gray9}"/>
+    <SolidColorBrush x:Key="GrayBrush10" Color="{DynamicResource Gray10}"/>
+
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{DynamicResource WhiteColor}"/>
+
+
+</ResourceDictionary>
