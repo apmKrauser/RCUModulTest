@@ -14,6 +14,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OxyPlot;
 using OxyPlot.Series;
+using System.Diagnostics;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using System.ComponentModel;
 
 
 namespace ModulTest
@@ -25,6 +29,10 @@ namespace ModulTest
     {
 
         public static RoutedCommand ADC1Command = new RoutedCommand();
+        public static RoutedCommand ADC2Command = new RoutedCommand();
+
+        SerialConnTest serTest;
+        BackgroundWorker worker;
 
         public ViewBufferTest()
         {
@@ -33,7 +41,8 @@ namespace ModulTest
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-
+            serTest = this.DataContext as SerialConnTest;
+            serTest.ProgressChanged += setProgressValue;
         }
 
         private void RCUCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -44,10 +53,93 @@ namespace ModulTest
 
         private void ADC1GetBuffer_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var serTest = this.DataContext as SerialConnTest;
-            serTest.GetADC1ValuesOnce();
+            Plot1.Visibility = Visibility.Collapsed;
+            worker = new BackgroundWorker();
+            worker.DoWork += worker_DoGetADC1Values;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();
         }
 
+        private void ADC2GetBuffer_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Plot1.Visibility = Visibility.Collapsed;
+            worker = new BackgroundWorker();
+            worker.DoWork += worker_DoGetADC2Values;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();
+        }
+
+        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Plot1.Visibility = Visibility.Visible;
+            this.Dispatcher.Invoke( () => { serTest.BuildData(); });
+        }
+
+
+        void worker_DoGetADC1Values(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                serTest.GetADC1ValuesOnce();
+            }
+            catch (TimeoutException ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
+            }
+        }
+
+        void worker_DoGetADC2Values(object sender, DoWorkEventArgs e)
+        {
+            try
+            {
+                serTest.GetADC2ValuesOnce();
+            }
+            catch (TimeoutException ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
+            }
+        }
+
+
+        public void setProgressValue(double? percent)
+        {
+            // dispatcher nutzen !!!
+            var app = Application.Current as App;
+            if (app == null) return;
+            if (percent.HasValue)
+            {
+                pgRCUComm.Dispatcher.Invoke(() => { pgRCUComm.Value = percent.Value; });
+                pgRCUComm.Dispatcher.Invoke(() => { pgRCUComm.IsIndeterminate = false; });
+            }
+            else
+            {
+                pgRCUComm.Dispatcher.Invoke(() => { pgRCUComm.IsIndeterminate = true; });
+            }
+        }
+
+        public void MetroWindow_MessageBox(string title, string text)
+        {
+            var window = Window.GetWindow(this) as MetroWindow;
+            try
+            {
+                if (window == null)
+                    throw new Exception("Parent window == null ?!");
+                Action<string, string> del = async (_title, _text) => { await window.ShowMessageAsync(_title, _text); };
+                del(title, text);
+            } catch (Exception ex)
+            {
+                MessageBox.Show(title, text);
+            }
+        }
 
     }
 }

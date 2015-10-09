@@ -51,6 +51,7 @@ namespace ModulTest
         public AdvancedSerialPort Open()
         {
             SerialPortObject = new AdvancedSerialPort(CurrentPort.PortName, BaudRate, Parity.None, 8, StopBits.One);
+            SerialPortObject.Open();
             return SerialPortObject;
         }
 

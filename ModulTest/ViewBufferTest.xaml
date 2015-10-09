@@ -9,6 +9,7 @@
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
              Loaded="UserControl_Loaded"
              mc:Ignorable="d" 
+             IsEnabled="{Binding ElementName=cmdGetADC1, Path=IsEnabled}"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
         <local:SerialConnTest/>
@@ -17,6 +18,9 @@
         <CommandBinding Command="{x:Static local:ViewBufferTest.ADC1Command}"
                         CanExecute="RCUCommand_CanExecute"
                         Executed="ADC1GetBuffer_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.ADC2Command}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="ADC2GetBuffer_Executed"/>        
     </UserControl.CommandBindings>    
     <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
         <DockPanel>
@@ -24,12 +28,47 @@
                 <Label>Test</Label>
             </StackPanel>
             <StackPanel Margin="0,0,10,10"  DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Margin="3">Read ADC1 Buffer</Button>
-                <Button Margin="3">Read ADC2 Buffer</Button>
+                <Button Name="cmdGetADC1" Margin="3" Command="{x:Static local:ViewBufferTest.ADC1Command}">Read ADC1 Buffer</Button>
+                <Button Name="cmdGetADC2" Margin="3" Command="{x:Static local:ViewBufferTest.ADC2Command}">Read ADC2 Buffer</Button>
             </StackPanel>
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding Path=RCUCom}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >Sample rate:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=ADCSampleRate}"/>
+                    <Label   Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >Time out [ms]:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=ADCReadTimeout}"/>
+                    
+                    <Label   Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" >ADC Max Volt:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="4" Text="{Binding Path=ADCVoltMax}"/>
+                    <Label   Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" >ADC Max Value:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding Path=ADCBinMax}"/>
+
+                    <Label   Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >ADC Buffer size:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="7" Text="{Binding Path=adc_buffer_size}"/>
+
+
+                </Grid>
             <Grid Name="grdView">
-                <Controls:MetroProgressBar Margin="20,0" MaxWidth="500"></Controls:MetroProgressBar>
-                <oxy:Plot x:Name="Plot1" Title="ADC Values" Margin="10"
+                <Controls:MetroProgressBar x:Name="pgRCUComm"  Margin="20,0" MaxWidth="500" Height="12"
+                                           Value="0"
+                                           IsIndeterminate="False"
+                                           />
+                <oxy:Plot x:Name="Plot1" Title="ADC Values" Margin="20" 
                           PlotAreaBorderColor="AliceBlue" 
                           TextColor="AliceBlue" 
                           Foreground="Orange"                          
@@ -42,11 +81,12 @@
                         <oxy:LineSeries Title="ADC1" Color="YellowGreen" StrokeThickness="2"
                         DataFieldX="Time"
                         DataFieldY="Voltage"
-                        ItemsSource="{Binding Path=ADC1Values}"
+                        ItemsSource="{Binding Path=ADCValues}"
                         />
                     </oxy:Plot.Series>
                 </oxy:Plot>
             </Grid>
+            </DockPanel>
         </DockPanel>
     </Grid>
 </UserControl>

@@ -29,6 +29,7 @@ namespace ModulTest
             get { return CurrentSerialConnection.BaudRate; }
             set { CurrentSerialConnection.BaudRate = value; }
         }
+
         
         
         

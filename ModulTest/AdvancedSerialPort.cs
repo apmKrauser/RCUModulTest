@@ -6,11 +6,14 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Threading;
 
 namespace ModulTest
 {
     public class AdvancedSerialPort : SerialPort
     {
+
+        public event Action<double?> TransferProgressEvent;
 
         private List<UInt16> RxBufferU16 = new List<UInt16>();
         private BinaryReader BinReader;
@@ -27,6 +30,12 @@ namespace ModulTest
         {
             byte[] byteArr = new byte[] {theByte};
             Write(byteArr, 0, 1);
+        }
+
+        private void setProgressValue(double? val)
+        {
+            if (TransferProgressEvent != null)
+                TransferProgressEvent(val);
         }
 
         /// <summary>
@@ -53,6 +62,8 @@ namespace ModulTest
                     {
                         if (RxBufferU16.Count >= elementsExpected)
                             return RxBufferU16.ToArray();
+                        Thread.Sleep(100);
+                        setProgressValue(100*RxBufferU16.Count/elementsExpected);
                     }
                 }
                 finally
@@ -62,6 +73,7 @@ namespace ModulTest
                     sw.Stop();
                     this.BaseStream.Flush();
                 }
+
                 throw new TimeoutException("[AdvancedSerialport:RxBufferU16]: Timeout");
             }
         }

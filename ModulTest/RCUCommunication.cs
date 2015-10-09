@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ModulTest
 {
     public class RCUCommunication
     {
-        const int adc_buffer_size = 2048;
-        const double ADCBinMax = 4096;
-        const double ADCVoltMax = 3.0;
-        const double ADCSampleRate = 1000;
+        public int adc_buffer_size { get; set; }
+        public double ADCBinMax { get; set; }
+        public double ADCVoltMax { get; set; }
+        public double ADCSampleRate { get; set; }
+        public int ADCReadTimeout { get; set; }
+
+        public event Action<double?> ProgressChanged;
+
         public enum RCUCommand : byte
         {
             NOOP = 0x00,
@@ -25,10 +31,18 @@ namespace ModulTest
         public RCUCommunication(SerialConfiguration _conf)
         {
             this.Connection = _conf;
+            adc_buffer_size = 2048;
+            ADCBinMax = 4096;
+            ADCVoltMax = 3.0;
+            ADCSampleRate = 1000;
+            ADCReadTimeout = 2000;            
         }
 
-        public void GetADCBufferOnce(ObservableCollection<VoltPoint> ADCValues, int numberOfADC)
+
+
+        public UInt16[] GetADCBufferOnce( int numberOfADC)
         {
+            UInt16[] RxArray = new UInt16[0];
             RCUCommand rc = RCUCommand.NOOP;
             switch (numberOfADC)
             {
@@ -39,26 +53,46 @@ namespace ModulTest
                     rc = RCUCommand.GetBufferADC2;
                     break;
                 default:
-                    return;
+                    return RxArray;
             }
             using (Connection.Open())
             {
+                RaiseProgressChanged(null);
                 var sp = Connection.SerialPortObject;
                 sp.WriteByte((byte)rc);
-                ReadADCBuffer(Connection.SerialPortObject, ADCValues);
+                RxArray = ReadADCBuffer(Connection.SerialPortObject);
             }
+            return RxArray;
         }
 
 
-        private void ReadADCBuffer(AdvancedSerialPort sp, ObservableCollection<VoltPoint> ADCValues)
+        private UInt16[] ReadADCBuffer(AdvancedSerialPort sp)
         {
-            UInt16[] RxArray = sp.ReadUInt16Array(adc_buffer_size, new TimeSpan(0, 0, 1));
-            ADCValues.Clear();
-            for (int i = 0; i < RxArray.Length; i++)
+            UInt16[] RxArray;
+            try
             {
-                ADCValues.Add(new VoltPoint((RxArray[i] / ADCBinMax) * ADCVoltMax, i / ADCSampleRate));
+                sp.TransferProgressEvent += RaiseProgressChanged;
+                RxArray = sp.ReadUInt16Array(adc_buffer_size, new TimeSpan(0, 0, 0, 0, ADCReadTimeout));
             }
+            catch (TimeoutException ex)
+            {
+                Debug.WriteLine("[ReadADCBuffer ComPort Timeout]:{0} ", ex.Message);
+                throw;
+            } 
+            finally
+            {
+                sp.TransferProgressEvent -= RaiseProgressChanged;
+            }
+            return RxArray;
         }
+
+        void RaiseProgressChanged(double? val)
+        {
+            if (ProgressChanged != null)
+                ProgressChanged(val);
+        }
+
+        
 
     }
 }

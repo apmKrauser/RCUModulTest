@@ -19,17 +19,17 @@
     </Window.CommandBindings>-->
     <Grid Margin="8">
         <Controls:MetroTabControl>
-            <Controls:MetroTabItem Header="General">
+            <Controls:MetroTabItem Header="  General  ">
                 <Grid>
-                <local:SerialConfig x:Name="elSerialCfg"></local:SerialConfig>
+                    <local:SerialConfig x:Name="elSerialCfg"></local:SerialConfig>
                 </Grid>
             </Controls:MetroTabItem>
-            <Controls:MetroTabItem Header="View Signal" >
+            <Controls:MetroTabItem Header="  View Signal  " >
                 <Grid>
                     <local:ViewBufferTest></local:ViewBufferTest>
                 </Grid>
             </Controls:MetroTabItem>
-            <Controls:MetroTabItem Header="FFT/Peakfinder"></Controls:MetroTabItem>
+            <Controls:MetroTabItem Header="  FFT/Peakfinder  "></Controls:MetroTabItem>
         </Controls:MetroTabControl>
     </Grid>
 </Controls:MetroWindow>

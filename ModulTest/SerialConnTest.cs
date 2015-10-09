@@ -20,17 +20,21 @@ namespace ModulTest
         // true during data acquisition
         public bool Busy { get; set; }
 
-        public ObservableCollection<VoltPoint> ADC1Values { get; private set; }
+        public event Action<double?> ProgressChanged;
 
+        public ObservableCollection<VoltPoint> ADCValues { get; private set; }
+
+        public RCUCommunication RCUCom { get; private set; }
 
         SerialConfiguration Connection;
-        RCUCommunication RCUCom;
+        UInt16[] RxArray;
 
         public SerialConnTest()
         {
-            ADC1Values = new ObservableCollection<VoltPoint>();
+            ADCValues = new ObservableCollection<VoltPoint>();
             Connection = (Application.Current as App).CurrentSerialConnection;
             RCUCom = new RCUCommunication(Connection);
+            RCUCom.ProgressChanged += RaiseProgressChanged;
         }
 
         public void GetADC1ValuesOnce ()
@@ -38,7 +42,7 @@ namespace ModulTest
             try
             {
                 Busy = true;
-                RCUCom.GetADCBufferOnce(ADC1Values, 1);
+                RxArray = RCUCom.GetADCBufferOnce(1);
             }
             finally
             {
@@ -46,6 +50,35 @@ namespace ModulTest
             }
         }
 
+        public void GetADC2ValuesOnce()
+        {
+            try
+            {
+                Busy = true;
+                RxArray = RCUCom.GetADCBufferOnce(2);
+            }
+            finally
+            {
+                Busy = false;
+            }
+        }
+
+        public void BuildData()
+        {
+            if (RxArray == null) return;
+            for (int i = 0; i < RxArray.Length; i++)
+            {
+                ADCValues.Add(new VoltPoint((RxArray[i] / RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
+            }
+        }
+
+        public void RaiseProgressChanged(double? val)
+        {
+            if (ProgressChanged != null)
+            {
+                ProgressChanged(val);
+            }
+        }
 
     }
 }
