@@ -20,7 +20,10 @@
                         Executed="ADC1GetBuffer_Executed"/>
         <CommandBinding Command="{x:Static local:ViewBufferTest.ADC2Command}"
                         CanExecute="RCUCommand_CanExecute"
-                        Executed="ADC2GetBuffer_Executed"/>        
+                        Executed="ADC2GetBuffer_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.VCOCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="SetConfigVCO_Executed"/>
     </UserControl.CommandBindings>    
     <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
         <DockPanel>
@@ -42,13 +45,16 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>                        
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >Sample rate:</Label>
+                    <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=ADCSampleRate}"/>
                     <Label   Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >Time out [ms]:</Label>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=ADCReadTimeout}"/>
@@ -60,6 +66,12 @@
 
                     <Label   Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >ADC Buffer size:</Label>
                     <TextBox Grid.Row="0" Grid.Column="7" Text="{Binding Path=adc_buffer_size}"/>
+
+                    <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="10" Text="{Binding Path=VCOFreqency}"/>
+                    <Label   Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" >Offset [V]:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="10" Text="{Binding Path=VCOOffset, StringFormat={}{0:0.00}}"/>
+                    <Button  Grid.Row="2" Grid.Column="10"  Command="{x:Static local:ViewBufferTest.VCOCommand}">-&gt; VCO</Button>
 
 
                 </Grid>

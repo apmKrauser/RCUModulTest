@@ -28,6 +28,6 @@
         <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right">Baud Rate:</Label>
         <ComboBox Grid.Row="1" Grid.Column="1"  SelectedIndex="9"
                   ItemsSource="{x:Static local:SerialConfiguration.BaudRates}" SelectedItem="{Binding Source={x:Static Application.Current}, Path=CurrentSerialBaudRate}"/>
-        <Button Grid.Row="2" Grid.Column="0" Margin="3" Click="Button_Click">Test</Button>
+        <!--<Button Grid.Row="2" Grid.Column="0" Margin="3" Click="Button_Click">Test</Button>-->
     </Grid>
 </UserControl>

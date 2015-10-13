@@ -70,7 +70,7 @@
       <DependentUpon>SerialConfig.xaml</DependentUpon>
     </Compile>
     <Compile Include="SerialConfiguration.cs" />
-    <Compile Include="SerialConnTest.cs" />
+    <Compile Include="SerialConnTest%28ViewModel%29.cs" />
     <Compile Include="Test1.xaml.cs">
       <DependentUpon>Test1.xaml</DependentUpon>
     </Compile>
