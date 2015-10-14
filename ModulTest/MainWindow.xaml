@@ -27,8 +27,12 @@
             </Controls:MetroTabItem>
             <Controls:MetroTabItem Header="  FFT/Peakfinder  "></Controls:MetroTabItem>
         </Controls:MetroTabControl>
-        <Expander Margin="0,5"  Header="COM Port" HorizontalAlignment="Right" VerticalAlignment="Top">
-            <local:SerialConfig x:Name="elSerialCfg" Background="{Binding Background, ElementName=Main}"></local:SerialConfig>
+        <Grid Margin="0,5" Background="{Binding Background, ElementName=Main}" HorizontalAlignment="Right" VerticalAlignment="Top">
+            <Expander x:Name="expSerial" Margin="0" Header="COM Port" FlowDirection="RightToLeft" MouseDown="Expander_MouseDown">
+            <Grid FlowDirection="LeftToRight">
+                <local:SerialConfig x:Name="elSerialCfg" ></local:SerialConfig>
+            </Grid>
         </Expander>
+        </Grid>
     </Grid>
 </Controls:MetroWindow>

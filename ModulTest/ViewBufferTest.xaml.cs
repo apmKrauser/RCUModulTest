@@ -85,6 +85,10 @@ namespace ModulTest
             {
                 this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
             }
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
+            }
             finally
             {
                 serTest.Busy = false;
@@ -113,6 +117,10 @@ namespace ModulTest
             {
                 this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
             }
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
+            }
         }
 
         void worker_DoGetADC2Values(object sender, DoWorkEventArgs e)
@@ -124,6 +132,10 @@ namespace ModulTest
             catch (TimeoutException ex)
             {
                 this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
+            }
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
             }
         }
 

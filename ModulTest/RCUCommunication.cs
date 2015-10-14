@@ -79,9 +79,9 @@ namespace ModulTest
                 default:
                     return RxArray;
             }
+            RaiseProgressChanged(null);
             using (Connection.Open())
             {
-                RaiseProgressChanged(null);
                 var sp = Connection.SerialPortObject;
                 sp.WriteByte((byte)rc);
                 sp.WriteUInt32(0);

@@ -65,10 +65,11 @@ namespace ModulTest
 
         public void BuildData()
         {
+            ADCValues.Clear();
             if (RxArray == null) return;
             for (int i = 0; i < RxArray.Length; i++)
             {
-                ADCValues.Add(new VoltPoint((RxArray[i] / RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
+                ADCValues.Add(new VoltPoint(((double)RxArray[i] / (double)RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
             }
         }
 

@@ -76,9 +76,11 @@
 
                 </Grid>
             <Grid Name="grdView">
-                <Controls:MetroProgressBar x:Name="pgRCUComm"  Margin="20,0" MaxWidth="500" Height="12"
+                <Controls:MetroProgressBar x:Name="pgRCUComm"  Margin="20,0" MaxWidth="500" Height="12" 
+                                           Background="#FF434343"
+                                           Foreground="#FF029196"
                                            Value="0"
-                                           IsIndeterminate="False"
+                                           IsIndeterminate="False" 
                                            />
                 <oxy:Plot x:Name="Plot1" Title="ADC Values" Margin="20" 
                           PlotAreaBorderColor="AliceBlue" 

@@ -40,6 +40,11 @@ namespace ModulTest
 
         }
 
+        private void Expander_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            expSerial.IsExpanded ^= true;
+        }
+
 
     }
 }
