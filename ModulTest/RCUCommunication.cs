@@ -59,7 +59,7 @@ namespace ModulTest
                 sp.WriteUInt32(VCOFreqency);
                 sp.WriteUInt32(offset);
                 sp.WriteUInt32(0);
-                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 200));
+                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
                 VCOFreqency = ret[0];
             }
         }
