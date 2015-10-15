@@ -31,6 +31,8 @@ namespace ModulTest
         public static RoutedCommand ADC1Command = new RoutedCommand();
         public static RoutedCommand ADC2Command = new RoutedCommand();
         public static RoutedCommand VCOCommand = new RoutedCommand();
+        public static RoutedCommand ADCFreqCommand = new RoutedCommand();
+
 
         SerialConnTest serTest;
         BackgroundWorker worker;
@@ -72,6 +74,28 @@ namespace ModulTest
             worker.ProgressChanged += worker_ProgressChanged;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync();
+        }
+
+
+        private void ADCFreq_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                serTest.Busy = true;
+                serTest.RCUCom.SetADCSampleRate();
+            }
+            catch (TimeoutException ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
+            }
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
+            }
+            finally
+            {
+                serTest.Busy = false;
+            }
         }
 
         private void SetConfigVCO_Executed(object sender, ExecutedRoutedEventArgs e)

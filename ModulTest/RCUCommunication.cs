@@ -1,25 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace ModulTest
 {
-    public class RCUCommunication
+    public class RCUCommunication : INotifyPropertyChanged
     {
         public int adc_buffer_size { get; set; }
         public UInt32 ADCBinMax { get; set; }
         public double ADCVoltMax { get; set; }
-        public double ADCSampleRate { get; set; }
         public int ADCReadTimeout { get; set; }
-        public UInt32 VCOFreqency { get; set; }
         public double VCOOffset { get; set; }
-
+        
+        private UInt32 _VCOFreqency;
+        public UInt32 VCOFreqency
+        {
+            get { return _VCOFreqency; }
+            set { _VCOFreqency = value; OnPropertyChanged(); }
+        }
+        public double ADCSampleRate 
+        { 
+            get
+            {
+                return RCUAdcSampleRates[RCUADCSelectedSampleRate];
+            }
+        }
+        
+        
         public event Action<double?> ProgressChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public enum RCUCommand : byte
         {
@@ -30,8 +46,36 @@ namespace ModulTest
             GetAndSendADC2 = 0x04,
             ConfigVCO      = 0x11,
             ConfigFilter   = 0x12,
+            ConfigADCRate  = 0x13,
             StreamToBuffer = 0x41
         }
+
+        public UInt32[] RCUAdcSampleRates
+        {
+            get 
+            {
+                double f = 84e6 / 4.0 / 15.0;
+                UInt32[] ret = new UInt32[8];
+                ret[0] = (UInt32)(f / 480);
+                ret[1] = (UInt32)(f / 144);
+                ret[2] = (UInt32)(f / 112);
+                ret[3] = (UInt32)(f / 84);
+                ret[4] = (UInt32)(f / 56);
+                ret[5] = (UInt32)(f / 28);
+                ret[6] = (UInt32)(f / 15);
+                ret[7] = (UInt32)(f / 3);
+                return ret;
+            }            
+        }
+
+        private UInt32 ADCSampleRateIndex = 1;
+
+        public UInt32 RCUADCSelectedSampleRate
+        {
+            get { return ADCSampleRateIndex = 1-1; }
+            set { ADCSampleRateIndex = value+1; }
+        }
+        
 
         public SerialConfiguration Connection;
 
@@ -41,12 +85,16 @@ namespace ModulTest
             adc_buffer_size = 2048;
             ADCBinMax = 4096;
             ADCVoltMax = 3.0;
-            ADCSampleRate = 1000;
             ADCReadTimeout = 2000;
             VCOFreqency = 3000;
             VCOOffset = 0.128;
         }
 
+        private void OnPropertyChanged([CallerMemberName] string p = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(p));
+        }
 
         public void SetConfigVCO()
         {
@@ -61,6 +109,21 @@ namespace ModulTest
                 sp.WriteUInt32(0);
                 UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
                 VCOFreqency = ret[0];
+            }
+        }
+
+        public bool SetADCSampleRate()
+        {
+            
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                sp.WriteByte((byte)RCUCommand.ConfigADCRate);
+                sp.WriteUInt32(ADCSampleRateIndex);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                return ret[0] == 0;
             }
         }
 

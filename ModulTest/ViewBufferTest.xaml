@@ -24,11 +24,14 @@
         <CommandBinding Command="{x:Static local:ViewBufferTest.VCOCommand}"
                         CanExecute="RCUCommand_CanExecute"
                         Executed="SetConfigVCO_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.ADCFreqCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="ADCFreq_Executed"/>        
     </UserControl.CommandBindings>    
     <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
         <DockPanel>
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-                <Label>Test</Label>
+                <!--<Label>Test</Label>-->
             </StackPanel>
             <StackPanel Margin="0,0,10,10"  DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Name="cmdGetADC1" Margin="3" Command="{x:Static local:ViewBufferTest.ADC1Command}">Read ADC1 Buffer</Button>
@@ -54,18 +57,19 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
-                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=ADCSampleRate}"/>
-                    <Label   Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >Time out [ms]:</Label>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=ADCReadTimeout}"/>
+                    <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >Time out [ms]:</Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=ADCReadTimeout}"/>
+                    <Label   Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >ADC Buffer size:</Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=adc_buffer_size}"/>
                     
                     <Label   Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" >ADC Max Volt:</Label>
                     <TextBox Grid.Row="0" Grid.Column="4" Text="{Binding Path=ADCVoltMax}"/>
                     <Label   Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" >ADC Max Value:</Label>
                     <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding Path=ADCBinMax}"/>
 
-                    <Label   Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >ADC Buffer size:</Label>
-                    <TextBox Grid.Row="0" Grid.Column="7" Text="{Binding Path=adc_buffer_size}"/>
+                    <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
+                    <ComboBox Grid.Row="0" Grid.Column="7" SelectedIndex="{Binding Path=RCUADCSelectedSampleRate}" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
+                    <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.ADCFreqCommand}">-&gt; ADC</Button>
 
                     <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
                     <TextBox Grid.Row="0" Grid.Column="10" Text="{Binding Path=VCOFreqency}"/>
