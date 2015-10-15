@@ -15,6 +15,7 @@ namespace ModulTest
 
         public event Action<double?> TransferProgressEvent;
 
+        private List<byte>   RxBufferU8 = new List<byte>();
         private List<UInt16> RxBufferU16 = new List<UInt16>();
         private List<UInt32> RxBufferU32 = new List<UInt32>();
         private BinaryReader BinReader;
@@ -61,7 +62,7 @@ namespace ModulTest
             {
 
                 sw.Start();
-                this.DataReceived += StreamSerialPort_DataReceived;
+                this.DataReceived += StreamSerialPort_DataReceived16;
                 try
                 {
                     while (sw.Elapsed < timeOut)
@@ -74,13 +75,46 @@ namespace ModulTest
                 }
                 finally
                 {
-                    this.DataReceived -= StreamSerialPort_DataReceived;
+                    this.DataReceived -= StreamSerialPort_DataReceived16;
                     RxBufferU16.Clear();
                     sw.Stop();
                     this.BaseStream.Flush();
                 }
 
                 throw new TimeoutException("[AdvancedSerialport:RxBufferU16]: Timeout");
+            }
+        }
+
+        public byte[] ReadUInt8Array(int elementsExpected, TimeSpan timeOut)
+        {
+            Stopwatch sw = new Stopwatch();
+            RxBufferU8.Clear();
+
+            // BinaryReader provides ReadUInt16 in Little Endian. ARM Coretex-M gcc is also Little Endian
+            // Leave Stream open
+            using (BinReader = new BinaryReader(this.BaseStream, Encoding.UTF8, true))
+            {
+
+                sw.Start();
+                this.DataReceived += StreamSerialPort_DataReceived8;
+                try
+                {
+                    while (sw.Elapsed < timeOut)
+                    {
+                        if (RxBufferU16.Count >= elementsExpected)
+                            return RxBufferU8.ToArray();
+                        Thread.Sleep(100);
+                    }
+                }
+                finally
+                {
+                    this.DataReceived -= StreamSerialPort_DataReceived8;
+                    RxBufferU8.Clear();
+                    sw.Stop();
+                    this.BaseStream.Flush();
+                }
+
+                throw new TimeoutException("[AdvancedSerialport:RxBufferU8]: Timeout");
             }
         }
 
@@ -118,12 +152,24 @@ namespace ModulTest
             }
         }
 
+
+        void StreamSerialPort_DataReceived8(object sender, SerialDataReceivedEventArgs e)
+        {
+            byte val;
+            // can read 16 bit?
+            while (this.BytesToRead >= 1)
+            {
+                val = BinReader.ReadByte();
+                RxBufferU8.Add(val);
+            }
+        }
+
         /// <summary>
         /// Serial Port Received Data Callback
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void StreamSerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        void StreamSerialPort_DataReceived16(object sender, SerialDataReceivedEventArgs e)
         {
             UInt16 val;
             // can read 16 bit?

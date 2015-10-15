@@ -114,7 +114,6 @@ namespace ModulTest
 
         public bool SetADCSampleRate()
         {
-            
             using (Connection.Open())
             {
                 var sp = Connection.SerialPortObject;
@@ -122,7 +121,7 @@ namespace ModulTest
                 sp.WriteUInt32(ADCSampleRateIndex);
                 sp.WriteUInt32(0);
                 sp.WriteUInt32(0);
-                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
                 return ret[0] == 0;
             }
         }
