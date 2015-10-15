@@ -46,6 +46,7 @@ namespace ModulTest
         {
             serTest = this.DataContext as SerialConnTest;
             serTest.ProgressChanged += setProgressValue;
+            cbFreqAdc.SelectedIndex = (int)serTest.RCUCom.ADCSampleRateIndex;
         }
 
         private void RCUCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -79,6 +80,7 @@ namespace ModulTest
 
         private void ADCFreq_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            serTest.RCUCom.ADCSampleRateIndex = (UInt32)cbFreqAdc.SelectedIndex;
             try
             {
                 serTest.Busy = true;

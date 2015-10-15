@@ -68,7 +68,7 @@
                     <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding Path=ADCBinMax}"/>
 
                     <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
-                    <ComboBox Grid.Row="0" Grid.Column="7" SelectedIndex="{Binding Path=RCUADCSelectedSampleRate}" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
+                    <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFreqAdc" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
                     <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.ADCFreqCommand}">-&gt; ADC</Button>
 
                     <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>

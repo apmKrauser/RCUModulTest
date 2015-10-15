@@ -29,7 +29,7 @@ namespace ModulTest
         { 
             get
             {
-                return RCUAdcSampleRates[RCUADCSelectedSampleRate];
+                return RCUAdcSampleRates[ADCSampleRateIndex];
             }
         }
         
@@ -68,13 +68,8 @@ namespace ModulTest
             }            
         }
 
-        private UInt32 ADCSampleRateIndex = 1;
+        public UInt32 ADCSampleRateIndex { get; set; }
 
-        public UInt32 RCUADCSelectedSampleRate
-        {
-            get { return ADCSampleRateIndex = 1-1; }
-            set { ADCSampleRateIndex = value+1; }
-        }
         
 
         public SerialConfiguration Connection;
@@ -85,6 +80,7 @@ namespace ModulTest
             adc_buffer_size = 2048;
             ADCBinMax = 4096;
             ADCVoltMax = 3.0;
+            ADCSampleRateIndex = 0;
             ADCReadTimeout = 2000;
             VCOFreqency = 3000;
             VCOOffset = 0.128;
@@ -114,11 +110,12 @@ namespace ModulTest
 
         public bool SetADCSampleRate()
         {
+            Debug.WriteLine("=> ADC samplerate:" + ADCSampleRateIndex);
             using (Connection.Open())
             {
                 var sp = Connection.SerialPortObject;
                 sp.WriteByte((byte)RCUCommand.ConfigADCRate);
-                sp.WriteUInt32(ADCSampleRateIndex);
+                sp.WriteUInt32(ADCSampleRateIndex + 1);
                 sp.WriteUInt32(0);
                 sp.WriteUInt32(0);
                 byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
