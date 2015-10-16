@@ -14,6 +14,10 @@ using System.Windows.Input;
 
 namespace ModulTest
 {
+    /// <summary>
+    /// Provides Data for RCU Tests
+    /// Viewmodel of ViewBufferTest.xaml
+    /// </summary>
     public class SerialConnTest 
     {
 
@@ -37,12 +41,16 @@ namespace ModulTest
             RCUCom.ProgressChanged += RaiseProgressChanged;
         }
 
+
+        /// <summary>
+        ///  Acquire data and read ADC buffer
+        /// </summary>
         public void GetADC1ValuesOnce ()
         {
             try
             {
                 Busy = true;
-                RxArray = RCUCom.GetADCBufferOnce(1);
+                RxArray = RCUCom.GetAndSendADCBufferOnce(1);
             }
             finally
             {
@@ -50,12 +58,15 @@ namespace ModulTest
             }
         }
 
+        /// <summary>
+        ///  Acquire data and read ADC buffer
+        /// </summary>
         public void GetADC2ValuesOnce()
         {
             try
             {
                 Busy = true;
-                RxArray = RCUCom.GetADCBufferOnce(2);
+                RxArray = RCUCom.GetAndSendADCBufferOnce(2);
             }
             finally
             {
@@ -63,14 +74,23 @@ namespace ModulTest
             }
         }
 
+        /// <summary>
+        ///  Prepare ADC data for visualization
+        /// </summary>
         public void BuildData()
         {
-            ADCValues.Clear();
+            VoltPoint[] temp = new VoltPoint[RxArray.Length];
+            //ADCValues.Clear();
             if (RxArray == null) return;
+            RaiseProgressChanged(null);
+            Debug.WriteLine("=> filling ADCValues");
             for (int i = 0; i < RxArray.Length; i++)
             {
-                ADCValues.Add(new VoltPoint(((double)RxArray[i] / (double)RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
+                temp[i] = (new VoltPoint(((double)RxArray[i] / (double)RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
             }
+            ADCValues = new ObservableCollection<VoltPoint>(temp);               
+            Debug.WriteLine("=> filling done.");
+
         }
 
         public void RaiseProgressChanged(double? val)

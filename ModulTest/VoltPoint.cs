@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ModulTest
 {
+    /// <summary>
+    /// ADC data point
+    /// </summary>
     public class VoltPoint
     {
         public double Voltage { get; set; }

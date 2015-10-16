@@ -18,6 +18,7 @@ namespace ModulTest
 {
     /// <summary>
     /// Interaktionslogik für SerialConfig.xaml
+    /// Serialconfig popup
     /// </summary>
     public partial class SerialConfig : UserControl
     {

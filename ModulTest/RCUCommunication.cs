@@ -11,6 +11,9 @@ using System.Windows;
 
 namespace ModulTest
 {
+    /// <summary>
+    /// Base communication and configuration with RCU firmware
+    /// </summary>
     public class RCUCommunication : INotifyPropertyChanged
     {
         public int adc_buffer_size { get; set; }
@@ -50,6 +53,9 @@ namespace ModulTest
             StreamToBuffer = 0x41
         }
 
+        /// <summary>
+        /// calculated from ADC cycles per conversion and std board config
+        /// </summary>
         public UInt32[] RCUAdcSampleRates
         {
             get 
@@ -68,9 +74,10 @@ namespace ModulTest
             }            
         }
 
+        /// <summary>
+        /// indicates which ADCCycleTime to use; 0 based while rcu parameter is 1 based
+        /// </summary>
         public UInt32 ADCSampleRateIndex { get; set; }
-
-        
 
         public SerialConfiguration Connection;
 
@@ -86,12 +93,20 @@ namespace ModulTest
             VCOOffset = 0.128;
         }
 
+        /// <summary>
+        /// wpf gui update
+        /// </summary>
+        /// <param name="p"></param>
         private void OnPropertyChanged([CallerMemberName] string p = "")
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(p));
         }
 
+
+        /// <summary>
+        /// Send VCO configuration
+        /// </summary>
         public void SetConfigVCO()
         {
             UInt32 offset;
@@ -107,7 +122,11 @@ namespace ModulTest
                 VCOFreqency = ret[0];
             }
         }
-
+        /// <summary>
+        /// Change Samplerate of ADC1&2
+        /// indeed alters adc_sampletime_cycles
+        /// </summary>
+        /// <returns></returns>
         public bool SetADCSampleRate()
         {
             Debug.WriteLine("=> ADC samplerate:" + ADCSampleRateIndex);
@@ -123,7 +142,12 @@ namespace ModulTest
             }
         }
 
-        public UInt16[] GetADCBufferOnce( int numberOfADC)
+        /// <summary>
+        /// Acquire data and send the resulting ADCBuffer
+        /// </summary>
+        /// <param name="numberOfADC">indicates which adc buffer to send</param>
+        /// <returns>buffer as uint16</returns>
+        public UInt16[] GetAndSendADCBufferOnce( int numberOfADC)
         {
             UInt16[] RxArray = new UInt16[0];
             RCUCommand rc = RCUCommand.NOOP;
@@ -152,6 +176,11 @@ namespace ModulTest
         }
 
 
+        /// <summary>
+        /// Reads ADCBuffer 
+        /// </summary>
+        /// <param name="sp"></param>
+        /// <returns></returns>
         private UInt16[] ReadADCBuffer(AdvancedSerialPort sp)
         {
             UInt16[] RxArray;
@@ -171,6 +200,7 @@ namespace ModulTest
             }
             return RxArray;
         }
+
 
         void RaiseProgressChanged(double? val)
         {

@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace ModulTest
 {
+    /// <summary>
+    /// Provides Data for SerialConfig.xaml
+    /// ViewModel of SerialConfig
+    /// </summary>
     public class SerialConfiguration : IDisposable
     {
         public class SerialPortDescriber

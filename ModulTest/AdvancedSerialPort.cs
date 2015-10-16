@@ -10,6 +10,10 @@ using System.Threading;
 
 namespace ModulTest
 {
+    /// <summary>
+    /// Extends Serialport with BinaryReader/Writer functions
+    /// Designed for ARM little endian
+    /// </summary>
     public class AdvancedSerialPort : SerialPort
     {
 
@@ -39,6 +43,11 @@ namespace ModulTest
             Write(byteArr, 0, 4);
         }
 
+
+        /// <summary>
+        /// calls Event for updating a progress bar
+        /// </summary>
+        /// <param name="val">0-100</param>
         private void setProgressValue(double? val)
         {
             if (TransferProgressEvent != null)
@@ -49,7 +58,7 @@ namespace ModulTest
         /// Read Array of UInt16 elements. Method is Blocking
         /// </summary>
         /// <param name="elementsExpected">Number of UInt16s expected</param>
-        /// <param name="timeOut">Timeout</param>
+        /// <param name="timeOut">Timeout (Throws TimeoutException)</param>
         /// <returns></returns>
         public UInt16[] ReadUInt16Array(int elementsExpected, TimeSpan timeOut)
         {
@@ -62,7 +71,7 @@ namespace ModulTest
             {
 
                 sw.Start();
-                this.DataReceived += StreamSerialPort_DataReceived16;
+                this.DataReceived += StreamSerialPort_DataReceived16bit;
                 try
                 {
                     while (sw.Elapsed < timeOut)
@@ -75,7 +84,7 @@ namespace ModulTest
                 }
                 finally
                 {
-                    this.DataReceived -= StreamSerialPort_DataReceived16;
+                    this.DataReceived -= StreamSerialPort_DataReceived16bit;
                     RxBufferU16.Clear();
                     sw.Stop();
                     this.BaseStream.Flush();
@@ -85,6 +94,12 @@ namespace ModulTest
             }
         }
 
+        /// <summary>
+        /// Read Array of UInt8 elements. Method is Blocking
+        /// </summary>
+        /// <param name="elementsExpected">Number of bytes expected</param>
+        /// <param name="timeOut">Timeout (Throws TimeoutException)</param>
+        /// <returns></returns>
         public byte[] ReadUInt8Array(int elementsExpected, TimeSpan timeOut)
         {
             Stopwatch sw = new Stopwatch();
@@ -96,7 +111,7 @@ namespace ModulTest
             {
 
                 sw.Start();
-                this.DataReceived += StreamSerialPort_DataReceived8;
+                this.DataReceived += StreamSerialPort_DataReceived8bin;
                 try
                 {
                     while (sw.Elapsed < timeOut)
@@ -108,7 +123,7 @@ namespace ModulTest
                 }
                 finally
                 {
-                    this.DataReceived -= StreamSerialPort_DataReceived8;
+                    this.DataReceived -= StreamSerialPort_DataReceived8bin;
                     RxBufferU8.Clear();
                     sw.Stop();
                     this.BaseStream.Flush();
@@ -118,13 +133,19 @@ namespace ModulTest
             }
         }
 
+        /// <summary>
+        /// Read Array of UInt32 elements. Method is Blocking
+        /// </summary>
+        /// <param name="elementsExpected">Number of UInt32s expected</param>
+        /// <param name="timeOut">Timeout (Throws TimeoutException)</param>
+        /// <returns></returns>
         public UInt32[] ReadUInt32Array(int elementsExpected, TimeSpan timeOut)
         {
             Stopwatch sw = new Stopwatch();
             RxBufferU32.Clear();
 
             // BinaryReader provides ReadUInt16 in Little Endian. ARM Coretex-M gcc is also Little Endian
-            // Leave Stream open
+            // -- Leave Stream open --
             using (BinReader = new BinaryReader(this.BaseStream, Encoding.UTF8, true))
             {
 
@@ -153,7 +174,12 @@ namespace ModulTest
         }
 
 
-        void StreamSerialPort_DataReceived8(object sender, SerialDataReceivedEventArgs e)
+        /// <summary>
+        /// SerialPort received data event handler (bytes)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void StreamSerialPort_DataReceived8bin(object sender, SerialDataReceivedEventArgs e)
         {
             byte val;
             // can read 16 bit?
@@ -165,11 +191,11 @@ namespace ModulTest
         }
 
         /// <summary>
-        /// Serial Port Received Data Callback
+        /// SerialPort received data event handler (uint16)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void StreamSerialPort_DataReceived16(object sender, SerialDataReceivedEventArgs e)
+        void StreamSerialPort_DataReceived16bit(object sender, SerialDataReceivedEventArgs e)
         {
             UInt16 val;
             // can read 16 bit?
@@ -180,10 +206,15 @@ namespace ModulTest
             }
         }
 
+        /// <summary>
+        /// SerialPort received data event handler (uint32)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void StreamSerialPort_DataReceived32bit(object sender, SerialDataReceivedEventArgs e)
         {
             UInt16 val;
-            // can read 16 bit?
+            // can read 32 bit?
             while (this.BytesToRead >= 4)
             {
                 val = BinReader.ReadUInt16();

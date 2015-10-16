@@ -60,6 +60,7 @@ namespace ModulTest
             Plot1.Visibility = Visibility.Collapsed;
             worker = new BackgroundWorker();
             worker.DoWork += worker_DoGetADC1Values;
+            // Use own delegates so RCUComm and AdvancedSerialport do not require a backgroundworker object
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             worker.ProgressChanged += worker_ProgressChanged;
             worker.WorkerReportsProgress = true;
