@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ModulTest
 {
@@ -22,11 +23,17 @@ namespace ModulTest
     {
 
         // true during data acquisition
-        public bool Busy { get; set; }
+        private static bool _busy = false;
+        private object _busysem =  new object(); // semaphore
+        public bool Busy 
+        {
+            get { lock (_busysem) return _busy; } 
+            set { lock (_busysem) _busy =  value; } 
+        }
 
         public event Action<double?> ProgressChanged;
 
-        public ObservableCollection<VoltPoint> ADCValues { get; private set; }
+        public ObservableList<VoltPoint> ADCValues { get; private set; }
 
         public RCUCommunication RCUCom { get; private set; }
 
@@ -35,7 +42,7 @@ namespace ModulTest
 
         public SerialConnTest()
         {
-            ADCValues = new ObservableCollection<VoltPoint>();
+            ADCValues = new ObservableList<VoltPoint>();
             Connection = (Application.Current as App).CurrentSerialConnection;
             RCUCom = new RCUCommunication(Connection);
             RCUCom.ProgressChanged += RaiseProgressChanged;
@@ -79,18 +86,20 @@ namespace ModulTest
         /// </summary>
         public void BuildData()
         {
-            VoltPoint[] temp = new VoltPoint[RxArray.Length];
-            //ADCValues.Clear();
+            ADCValues.Clear();
             if (RxArray == null) return;
+            VoltPoint[] temp = new VoltPoint[RxArray.Length];
             RaiseProgressChanged(null);
             Debug.WriteLine("=> filling ADCValues");
             for (int i = 0; i < RxArray.Length; i++)
             {
                 temp[i] = (new VoltPoint(((double)RxArray[i] / (double)RCUCom.ADCBinMax) * RCUCom.ADCVoltMax, i / RCUCom.ADCSampleRate));
             }
-            ADCValues = new ObservableCollection<VoltPoint>(temp);               
-            Debug.WriteLine("=> filling done.");
-
+            ADCValues.AddRange(temp);
+            //foreach (var item in temp)
+            //{
+            //    ADCValues.Add(item);
+            //}
         }
 
         public void RaiseProgressChanged(double? val)

@@ -9,7 +9,6 @@
              xmlns:oxy="clr-namespace:OxyPlot.Wpf;assembly=OxyPlot.Wpf" 
              Loaded="UserControl_Loaded"
              mc:Ignorable="d" 
-             IsEnabled="{Binding ElementName=cmdGetADC1, Path=IsEnabled}"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.DataContext>
         <local:SerialConnTest/>
