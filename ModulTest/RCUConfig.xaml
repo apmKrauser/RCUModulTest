@@ -7,31 +7,26 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <UserControl.DataContext>
-        <local:RCUCommunication/>
-    </UserControl.DataContext>
     <UserControl.CommandBindings>
-        <CommandBinding Command="{x:Static local:ViewBufferTest.VCOCommand}"
+        <CommandBinding Command="{x:Static local:RCUConfig.VCOCommand}"
                         CanExecute="RCUCommand_CanExecute"
                         Executed="SetConfigVCO_Executed"/>
-        <CommandBinding Command="{x:Static local:ViewBufferTest.ADCFreqCommand}"
+        <CommandBinding Command="{x:Static local:RCUConfig.ADCFreqCommand}"
                         CanExecute="RCUCommand_CanExecute"
                         Executed="ADCFreq_Executed"/>
-        <CommandBinding Command="{x:Static local:ViewBufferTest.FilterCommand}"
+        <CommandBinding Command="{x:Static local:RCUConfig.FilterCommand}"
                         CanExecute="RCUCommand_CanExecute"
-                        Executed="ADCFreq_Executed"/>        
+                        Executed="Filter_Executed"/>        
     </UserControl.CommandBindings>
-    <Grid DockPanel.Dock="Top" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DataContext="{Binding Path=RCUCom}">
+    <Grid DockPanel.Dock="Top" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding Path=RCUCom}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
@@ -39,28 +34,30 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Highpass:</Label>
-        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Lowpass:</Label>
-        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Filter gain:</Label>
-        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltHP" ItemsSource="{Binding Path=}"/>
-        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltLP" ItemsSource="{Binding Path=}"/>
-        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltGain" ItemsSource="{Binding Path=}"/>
-        <Slider   Grid.Row="0" Grid.Column="7" x:Name="sldFiltFreq" Value="{Binding Path=}" Minimum="40" Maximum="100" SmallChange="0.01465" LargeChange="1"/>
-        <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.FilterCommand}">-&gt; Filt</Button>
-
-        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
-        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFreqAdc" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
-        <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.ADCFreqCommand}">-&gt; ADC</Button>
-
-        <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
-        <TextBox Grid.Row="0" Grid.Column="10" Text="{Binding Path=VCOFreqency}"/>
-        <Label   Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" >Offset [V]:</Label>
-        <TextBox Grid.Row="1" Grid.Column="10" Text="{Binding Path=VCOOffset, StringFormat={}{0:0.00}}"/>
-        <Button  Grid.Row="2" Grid.Column="10"  Command="{x:Static local:ViewBufferTest.VCOCommand}">-&gt; VCO</Button>
 
 
+        <Label   Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=VCOFreqency}"/>
+        <Label   Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >Offset [V]:</Label>
+        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=VCOOffset, StringFormat={}{0:0.00}}"/>
+        <Button  Grid.Row="2" Grid.Column="1" Margin="2,4,2,0" Command="{x:Static local:RCUConfig.VCOCommand}">-&gt; VCO</Button>
+
+        <Label    Grid.Row="0" Grid.Column="3" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
+        <ComboBox Grid.Row="1" Grid.Column="3" x:Name="cbFreqAdc" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
+        <Button   Grid.Row="2" Grid.Column="3" Margin="2,4,2,0" Command="{x:Static local:RCUConfig.ADCFreqCommand}">-&gt; ADC</Button>
+
+        <Label    Grid.Row="0" Grid.Column="7" HorizontalAlignment="Right" >Highpass:</Label>
+        <Label    Grid.Row="1" Grid.Column="7" HorizontalAlignment="Right" >Lowpass:</Label>
+        <Slider   Grid.Row="2" Grid.Column="7"  Grid.ColumnSpan="2" x:Name="sldFiltFreq" Value="{Binding Path=FilterBaseFreq}" Minimum="40" Maximum="100" SmallChange="0.01465" LargeChange="1"/>
+        <ComboBox Grid.Row="0" Grid.Column="8" x:Name="cbFiltHP" ItemsSource="{Binding Path=FilterHPList}" SelectedIndex="{Binding Path=FilterHighPassIdx}"/>
+        <ComboBox Grid.Row="1" Grid.Column="8" x:Name="cbFiltLP" ItemsSource="{Binding Path=FilterLPList}" SelectedIndex="{Binding Path=FilterLowPassIdx}"/>
+        <Label    Grid.Row="0" Grid.Column="5" HorizontalAlignment="Right" >Filter gain:</Label>
+        <ComboBox Grid.Row="1" Grid.Column="5" x:Name="cbFiltGain" ItemsSource="{Binding Path=FilterGainList}" SelectedIndex="{Binding Path=FilterGainIdx}"/>
+        <Button   Grid.Row="2" Grid.Column="5" Margin="2,4,2,0" Command="{x:Static local:RCUConfig.FilterCommand}">-&gt; Filt</Button>
+        
     </Grid>
 
 

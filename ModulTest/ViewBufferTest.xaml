@@ -19,13 +19,7 @@
                         Executed="ADC1GetBuffer_Executed"/>
         <CommandBinding Command="{x:Static local:ViewBufferTest.ADC2Command}"
                         CanExecute="RCUCommand_CanExecute"
-                        Executed="ADC2GetBuffer_Executed"/>
-        <CommandBinding Command="{x:Static local:ViewBufferTest.VCOCommand}"
-                        CanExecute="RCUCommand_CanExecute"
-                        Executed="SetConfigVCO_Executed"/>
-        <CommandBinding Command="{x:Static local:ViewBufferTest.ADCFreqCommand}"
-                        CanExecute="RCUCommand_CanExecute"
-                        Executed="ADCFreq_Executed"/>        
+                        Executed="ADC2GetBuffer_Executed"/>       
     </UserControl.CommandBindings>    
     <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
         <DockPanel>
@@ -37,7 +31,12 @@
                 <Button Name="cmdGetADC2" Margin="3" Command="{x:Static local:ViewBufferTest.ADC2Command}">Read ADC2 Buffer</Button>
             </StackPanel>
             <DockPanel>
-                <Grid DockPanel.Dock="Top" Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding Path=RCUCom}">
+                <StackPanel Margin="0,30,0,0" DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center">
+
+                    <Expander Header="RCU Configuration" Background="{Binding ElementName=ViewADCBuffer, Path=Background}" HorizontalAlignment="Left" IsExpanded="True">
+                        <local:RCUConfig DataContext="{Binding Self}"/>
+                    </Expander>
+                <Grid  Margin="10" VerticalAlignment="Center" HorizontalAlignment="Center" DataContext="{Binding Path=RCUCom}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -47,9 +46,6 @@
                         <ColumnDefinition Width="10"/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
-                        <ColumnDefinition Width="10"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>                        
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -66,18 +62,10 @@
                     <Label   Grid.Row="1" Grid.Column="3" HorizontalAlignment="Right" >ADC Max Value:</Label>
                     <TextBox Grid.Row="1" Grid.Column="4" Text="{Binding Path=ADCBinMax}"/>
 
-                    <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
-                    <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFreqAdc" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
-                    <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.ADCFreqCommand}">-&gt; ADC</Button>
-
-                    <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
-                    <TextBox Grid.Row="0" Grid.Column="10" Text="{Binding Path=VCOFreqency}"/>
-                    <Label   Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" >Offset [V]:</Label>
-                    <TextBox Grid.Row="1" Grid.Column="10" Text="{Binding Path=VCOOffset, StringFormat={}{0:0.00}}"/>
-                    <Button  Grid.Row="2" Grid.Column="10"  Command="{x:Static local:ViewBufferTest.VCOCommand}">-&gt; VCO</Button>
-
-
+                
                 </Grid>
+                </StackPanel>
+                
             <Grid Name="grdView">
                 <Controls:MetroProgressBar x:Name="pgRCUComm"  Margin="20,0" MaxWidth="500" Height="12" 
                                            Background="#FF434343"

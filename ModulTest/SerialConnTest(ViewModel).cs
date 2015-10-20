@@ -37,6 +37,12 @@ namespace ModulTest
 
         public RCUCommunication RCUCom { get; private set; }
 
+        public SerialConnTest Self
+        {
+            get { return this; }
+        }
+        
+
         SerialConfiguration Connection;
         UInt16[] RxArray;
 

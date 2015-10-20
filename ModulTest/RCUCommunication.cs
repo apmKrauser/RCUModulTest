@@ -21,6 +21,41 @@ namespace ModulTest
         public double ADCVoltMax { get; set; }
         public int ADCReadTimeout { get; set; }
         public double VCOOffset { get; set; }
+        public int FilterGainIdx { get; set; }
+        public ObservableCollection<string> FilterHPList { get; set; }
+        public ObservableCollection<string> FilterLPList { get; set; }        
+
+        private int _filterHighPassIdx = 0;
+        private int _filterLowPassIdx = 0;
+
+        public int FilterHighPassIdx
+        {
+            get
+            {
+                return _filterHighPassIdx;
+            }
+
+            set
+            {
+                _filterHighPassIdx = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int FilterLowPassIdx 
+        {
+            get
+            {
+                return _filterLowPassIdx;
+            }
+
+            set
+            {
+                _filterLowPassIdx = value;
+                OnPropertyChanged();
+            }
+        }
+
         
         private UInt32 _VCOFreqency;
         public UInt32 VCOFreqency
@@ -33,6 +68,50 @@ namespace ModulTest
             get
             {
                 return RCUAdcSampleRates[ADCSampleRateIndex];
+            }
+        }
+
+        private double _filterBaseFreq;
+        public double FilterBaseFreq
+        {
+            get
+            {
+                return _filterBaseFreq;
+            }
+
+            set
+            {
+                _filterBaseFreq = value;
+                OnPropertyChanged();
+                // Generate Filterlists based on base frequency
+                var temp = FilterHighPassIdx;
+                var temp2 = FilterLowPassIdx;
+                FilterHPList.Clear();
+                FilterHPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 6000 * 1000)));
+                FilterHPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 3000 * 1000)));
+                FilterHPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 1000 * 1000)));
+                FilterHPList.Add(String.Format("bypassed"));
+                FilterLPList.Clear();
+                FilterLPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 600 * 1000)));
+                FilterLPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 300 * 1000)));
+                FilterLPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 100 * 1000)));
+                FilterLPList.Add(String.Format("{0:##0.0} kHz", (_filterBaseFreq / 100 * 1000)));
+                FilterLowPassIdx = temp2;
+                FilterHighPassIdx = temp;
+                
+            }
+        }
+
+        public ObservableCollection<string> FilterGainList
+        {
+            get 
+            {
+                ObservableCollection<string> lst = new ObservableCollection<string>();
+                lst.Add("0 dB");
+                lst.Add("12 dB");
+                lst.Add("24 dB");
+                lst.Add("32 dB");
+                return lst; 
             }
         }
         
@@ -91,6 +170,11 @@ namespace ModulTest
             ADCReadTimeout = 2000;
             VCOFreqency = 3000;
             VCOOffset = 0.128;
+            FilterHighPassIdx = 0;
+            FilterLowPassIdx = 0;
+            FilterHPList = new ObservableCollection<string>();
+            FilterLPList = new ObservableCollection<string>();
+            FilterBaseFreq = 40;
         }
 
         /// <summary>
@@ -122,6 +206,26 @@ namespace ModulTest
                 VCOFreqency = ret[0];
             }
         }
+
+        public void SetConfigFilter()
+        {
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                UInt32 basefreq = (UInt32)(FilterBaseFreq*1000);
+                UInt32 hpf =  (UInt32)(FilterHighPassIdx & 0x03);
+                UInt32 lpf =  (UInt32)(FilterLowPassIdx  & 0x03);
+                UInt32 gain = (UInt32)(FilterGainIdx     & 0x03);
+                UInt32 bandp = (lpf << 2) | hpf;
+                sp.WriteByte((byte)RCUCommand.ConfigFilter);
+                sp.WriteUInt32(basefreq);
+                sp.WriteUInt32(gain);
+                sp.WriteUInt32(bandp);
+                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                VCOFreqency = ret[0];
+            }
+        }
+
         /// <summary>
         /// Change Samplerate of ADC1&2
         /// indeed alters adc_sampletime_cycles

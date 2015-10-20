@@ -47,7 +47,6 @@ namespace ModulTest
         {
             serTest = this.DataContext as SerialConnTest;
             serTest.ProgressChanged += setProgressValue;
-            cbFreqAdc.SelectedIndex = (int)serTest.RCUCom.ADCSampleRateIndex;
         }
 
         private void RCUCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -83,27 +82,6 @@ namespace ModulTest
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync();
-        }
-
-
-        private void ADCFreq_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            serTest.RCUCom.ADCSampleRateIndex = (UInt32)cbFreqAdc.SelectedIndex;
-            TryCatch(() =>
-            {
-                serTest.Busy = true;
-                serTest.RCUCom.SetADCSampleRate();
-            });
-        }
-
-        private void SetConfigVCO_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            TryCatch(() =>
-            {
-                serTest.Busy = true;
-                serTest.RCUCom.SetConfigVCO();
-            });
-
         }
 
 
