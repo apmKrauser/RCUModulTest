@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="ModulTest.RCUConfig"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ModulTest"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.DataContext>
+        <local:RCUCommunication/>
+    </UserControl.DataContext>
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.VCOCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="SetConfigVCO_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.ADCFreqCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="ADCFreq_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.FilterCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="ADCFreq_Executed"/>        
+    </UserControl.CommandBindings>
+    <Grid DockPanel.Dock="Top" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DataContext="{Binding Path=RCUCom}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Highpass:</Label>
+        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Lowpass:</Label>
+        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Filter gain:</Label>
+        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltHP" ItemsSource="{Binding Path=}"/>
+        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltLP" ItemsSource="{Binding Path=}"/>
+        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFiltGain" ItemsSource="{Binding Path=}"/>
+        <Slider   Grid.Row="0" Grid.Column="7" x:Name="sldFiltFreq" Value="{Binding Path=}" Minimum="40" Maximum="100" SmallChange="0.01465" LargeChange="1"/>
+        <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.FilterCommand}">-&gt; Filt</Button>
+
+        <Label    Grid.Row="0" Grid.Column="6" HorizontalAlignment="Right" >Sample rate [Hz]:</Label>
+        <ComboBox Grid.Row="0" Grid.Column="7" x:Name="cbFreqAdc" ItemsSource="{Binding Path=RCUAdcSampleRates}"/>
+        <Button   Grid.Row="1" Grid.Column="7"  Command="{x:Static local:ViewBufferTest.ADCFreqCommand}">-&gt; ADC</Button>
+
+        <Label   Grid.Row="0" Grid.Column="9" HorizontalAlignment="Right" >VCO Freq [Hz]:</Label>
+        <TextBox Grid.Row="0" Grid.Column="10" Text="{Binding Path=VCOFreqency}"/>
+        <Label   Grid.Row="1" Grid.Column="9" HorizontalAlignment="Right" >Offset [V]:</Label>
+        <TextBox Grid.Row="1" Grid.Column="10" Text="{Binding Path=VCOOffset, StringFormat={}{0:0.00}}"/>
+        <Button  Grid.Row="2" Grid.Column="10"  Command="{x:Static local:ViewBufferTest.VCOCommand}">-&gt; VCO</Button>
+
+
+    </Grid>
+
+
+</UserControl>
+
