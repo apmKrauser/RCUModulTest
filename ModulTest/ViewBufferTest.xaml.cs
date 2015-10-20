@@ -18,6 +18,7 @@ using System.Diagnostics;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using System.ComponentModel;
+using System.Windows.Threading;
 
 
 namespace ModulTest
@@ -55,6 +56,14 @@ namespace ModulTest
             e.CanExecute = !serTest.Busy;
         }
 
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            App.Current.Dispatcher.BeginInvoke( new Action(() => {
+                serTest.BuildData();
+            }), DispatcherPriority.Background);
+            Plot1.Visibility = Visibility.Visible;
+        }
+
         private void ADC1GetBuffer_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Plot1.Visibility = Visibility.Collapsed;
@@ -62,7 +71,6 @@ namespace ModulTest
             worker.DoWork += worker_DoGetADC1Values;
             // Use own delegates so RCUComm and AdvancedSerialport do not require a backgroundworker object
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.ProgressChanged += worker_ProgressChanged;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync();
         }
@@ -73,7 +81,6 @@ namespace ModulTest
             worker = new BackgroundWorker();
             worker.DoWork += worker_DoGetADC2Values;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.ProgressChanged += worker_ProgressChanged;
             worker.WorkerReportsProgress = true;
             worker.RunWorkerAsync();
         }
@@ -82,88 +89,38 @@ namespace ModulTest
         private void ADCFreq_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             serTest.RCUCom.ADCSampleRateIndex = (UInt32)cbFreqAdc.SelectedIndex;
-            try
+            TryCatch(() =>
             {
                 serTest.Busy = true;
                 serTest.RCUCom.SetADCSampleRate();
-            }
-            catch (TimeoutException ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
-            }
-            finally
-            {
-                serTest.Busy = false;
-            }
+            });
         }
 
         private void SetConfigVCO_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            try
+            TryCatch(() =>
             {
                 serTest.Busy = true;
                 serTest.RCUCom.SetConfigVCO();
-            }
-            catch (TimeoutException ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
-            }
-            finally
-            {
-                serTest.Busy = false;
-            }
-        }
+            });
 
-        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            //throw new NotImplementedException();
-        }
-
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Plot1.Visibility = Visibility.Visible;
-            this.Dispatcher.Invoke( () => { serTest.BuildData(); });
         }
 
 
         void worker_DoGetADC1Values(object sender, DoWorkEventArgs e)
         {
-            try
+            TryCatch(() =>
             {
                 serTest.GetADC1ValuesOnce();
-            }
-            catch (TimeoutException ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
-            }
+            });
         }
 
         void worker_DoGetADC2Values(object sender, DoWorkEventArgs e)
         {
-            try
+            TryCatch(() =>
             {
                 serTest.GetADC2ValuesOnce();
-            }
-            catch (TimeoutException ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
-            }
+            });
         }
 
 
@@ -183,7 +140,28 @@ namespace ModulTest
             }
         }
 
-        public void MetroWindow_MessageBox(string title, string text)
+        private void TryCatch(Action act)
+        {
+            try
+            {
+                serTest.Busy = true;
+                act();
+            }
+            catch (TimeoutException ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Serial port timeout", ex.Message));
+            }
+            catch (Exception ex)
+            {
+                this.Dispatcher.Invoke(() => MetroWindow_MessageBox("Connection failed", ex.Message));
+            }
+            finally
+            {
+                serTest.Busy = false;
+            }            
+        }
+
+        private void MetroWindow_MessageBox(string title, string text)
         {
             var window = Window.GetWindow(this) as MetroWindow;
             try

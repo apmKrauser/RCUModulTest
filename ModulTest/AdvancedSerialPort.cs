@@ -78,7 +78,7 @@ namespace ModulTest
                     {
                         if (RxBufferU16.Count >= elementsExpected)
                             return RxBufferU16.ToArray();
-                        Thread.Sleep(100);
+                        Thread.Sleep(20);
                         setProgressValue(100*RxBufferU16.Count/elementsExpected);
                     }
                 }
@@ -116,9 +116,9 @@ namespace ModulTest
                 {
                     while (sw.Elapsed < timeOut)
                     {
-                        if (RxBufferU16.Count >= elementsExpected)
+                        if (RxBufferU8.Count >= elementsExpected)
                             return RxBufferU8.ToArray();
-                        Thread.Sleep(100);
+                        Thread.Sleep(20);
                     }
                 }
                 finally
@@ -157,7 +157,7 @@ namespace ModulTest
                     {
                         if (RxBufferU32.Count >= 1)
                             return RxBufferU32.ToArray();
-                        Thread.Sleep(100);
+                        Thread.Sleep(20);
                         setProgressValue(100 * RxBufferU32.Count / elementsExpected);
                     }
                 }

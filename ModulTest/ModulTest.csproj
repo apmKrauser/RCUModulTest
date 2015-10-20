@@ -65,6 +65,7 @@
     <Compile Include="AdvancedSerialPort.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ObservableList.cs" />
     <Compile Include="RCUCommunication.cs" />
     <Compile Include="RCUConfig.xaml.cs">
       <DependentUpon>RCUConfig.xaml</DependentUpon>
