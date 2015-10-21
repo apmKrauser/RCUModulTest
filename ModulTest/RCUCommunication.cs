@@ -207,7 +207,7 @@ namespace ModulTest
             }
         }
 
-        public void SetConfigFilter()
+        public bool SetConfigFilter()
         {
             using (Connection.Open())
             {
@@ -221,8 +221,8 @@ namespace ModulTest
                 sp.WriteUInt32(basefreq);
                 sp.WriteUInt32(gain);
                 sp.WriteUInt32(bandp);
-                UInt32[] ret = sp.ReadUInt32Array(1, new TimeSpan(0, 0, 0, 0, 1000));
-                VCOFreqency = ret[0];
+                byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                return ret[0] == 0x00;
             }
         }
 
