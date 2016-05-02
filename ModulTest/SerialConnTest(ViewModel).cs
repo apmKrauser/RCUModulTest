@@ -63,7 +63,7 @@ namespace ModulTest
             try
             {
                 Busy = true;
-                RxArray = RCUCom.GetAndSendADCBufferOnce(1);
+                RxArray = RCUCom.GetAndSendADCOnce(1);
             }
             finally
             {
@@ -79,7 +79,7 @@ namespace ModulTest
             try
             {
                 Busy = true;
-                RxArray = RCUCom.GetAndSendADCBufferOnce(2);
+                RxArray = RCUCom.GetAndSendADCOnce(2);
             }
             finally
             {

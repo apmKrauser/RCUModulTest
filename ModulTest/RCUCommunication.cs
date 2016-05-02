@@ -122,13 +122,14 @@ namespace ModulTest
         public enum RCUCommand : byte
         {
             NOOP = 0x00,
-            GetBufferADC1  = 0x01,
-            GetBufferADC2  = 0x02,
+            SendBufferADC1 = 0x01,
+            SendBufferADC2 = 0x02,
             GetAndSendADC1 = 0x03,
             GetAndSendADC2 = 0x04,
             ConfigVCO      = 0x11,
             ConfigFilter   = 0x12,
             ConfigADCRate  = 0x13,
+            ProcessData    = 0x20,
             StreamToBuffer = 0x41
         }
 
@@ -246,12 +247,94 @@ namespace ModulTest
             }
         }
 
+        public UInt16[] ProcessBuffer_HIL(UInt16[] val)
+        {
+            bool r;
+            UInt16[] x = new UInt16[2048];
+            r = StartUpload();
+            if (!r) return x;
+            r = UploadBuffer(val);
+            if (!r) return x;
+            r = ProcessData();
+            if (!r) return x;
+            return SendADCBufferOnce(1);
+        }
+
+        public bool ProcessData()
+        {
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                sp.WriteByte((byte)RCUCommand.ProcessData);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                return ret[0] == 0;
+            }
+        }
+
+        public bool StartUpload()
+        {
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                sp.WriteByte((byte)RCUCommand.StreamToBuffer);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                return ret[0] == 0;
+            }
+        }
+
+        public bool UploadBuffer(UInt16[] val)
+        {
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                sp.WriteUInt16(val);
+                byte[] ret = sp.ReadUInt8Array(1, new TimeSpan(0, 0, 0, 0, 1000));
+                return ret[0] == 0;
+            }
+        }
+
+
+        public UInt16[] SendADCBufferOnce(int numberOfADC)
+        {
+            UInt16[] RxArray = new UInt16[0];
+            RCUCommand rc = RCUCommand.NOOP;
+            switch (numberOfADC)
+            {
+                case 1:
+                    rc = RCUCommand.SendBufferADC1;
+                    break;
+                case 2:
+                    rc = RCUCommand.SendBufferADC2;
+                    break;
+                default:
+                    return RxArray;
+            }
+            RaiseProgressChanged(null);
+            using (Connection.Open())
+            {
+                var sp = Connection.SerialPortObject;
+                sp.WriteByte((byte)rc);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                sp.WriteUInt32(0);
+                RxArray = ReadADCBuffer(Connection.SerialPortObject);
+            }
+            return RxArray;
+        }
+
+        
         /// <summary>
         /// Acquire data and send the resulting ADCBuffer
         /// </summary>
         /// <param name="numberOfADC">indicates which adc buffer to send</param>
         /// <returns>buffer as uint16</returns>
-        public UInt16[] GetAndSendADCBufferOnce( int numberOfADC)
+        public UInt16[] GetAndSendADCOnce( int numberOfADC)
         {
             UInt16[] RxArray = new UInt16[0];
             RCUCommand rc = RCUCommand.NOOP;

@@ -43,6 +43,12 @@ namespace ModulTest
             Write(byteArr, 0, 4);
         }
 
+        internal void WriteUInt16(UInt16[] val)
+        {
+            byte[] TxBufferU8 = val.SelectMany(i => BitConverter.GetBytes(i)).ToArray();
+            Write(TxBufferU8, 0, TxBufferU8.Length);
+        }
+
 
         /// <summary>
         /// calls Event for updating a progress bar
