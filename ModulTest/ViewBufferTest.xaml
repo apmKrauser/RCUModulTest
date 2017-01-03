@@ -19,7 +19,10 @@
                         Executed="ADC1GetBuffer_Executed"/>
         <CommandBinding Command="{x:Static local:ViewBufferTest.ADC2Command}"
                         CanExecute="RCUCommand_CanExecute"
-                        Executed="ADC2GetBuffer_Executed"/>       
+                        Executed="ADC2GetBuffer_Executed"/>
+        <CommandBinding Command="{x:Static local:ViewBufferTest.DebugSignalCommand}"
+                        CanExecute="RCUCommand_CanExecute"
+                        Executed="DebugSignalCommand_Executed"/>
     </UserControl.CommandBindings>    
     <Grid Margin="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
         <DockPanel>
@@ -29,6 +32,7 @@
             <StackPanel Margin="0,0,10,10"  DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Name="cmdGetADC1" Margin="3" Command="{x:Static local:ViewBufferTest.ADC1Command}">Read ADC1 Buffer</Button>
                 <Button Name="cmdGetADC2" Margin="3" Command="{x:Static local:ViewBufferTest.ADC2Command}">Read ADC2 Buffer</Button>
+                <Button Name="cmdDebugSignalCommand" Margin="3" Command="{x:Static local:ViewBufferTest.DebugSignalCommand}">Show Processed Buffer</Button>
             </StackPanel>
             <DockPanel>
                 <StackPanel Margin="0,30,0,0" DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center">

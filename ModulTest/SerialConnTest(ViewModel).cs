@@ -88,6 +88,22 @@ namespace ModulTest
         }
 
         /// <summary>
+        ///  Process data and receive debug signal buffer
+        /// </summary>
+        public void GetChannel3ValuesOnce()
+        {
+            try
+            {
+                Busy = true;
+                RxArray = RCUCom.GetAndSendADCOnce(3);
+            }
+            finally
+            {
+                Busy = false;
+            }
+        }
+
+        /// <summary>
         ///  Prepare ADC data for visualization
         /// </summary>
         public void BuildData()

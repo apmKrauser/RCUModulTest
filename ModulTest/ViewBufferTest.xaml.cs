@@ -31,6 +31,7 @@ namespace ModulTest
 
         public static RoutedCommand ADC1Command = new RoutedCommand();
         public static RoutedCommand ADC2Command = new RoutedCommand();
+        public static RoutedCommand DebugSignalCommand = new RoutedCommand();
         public static RoutedCommand VCOCommand = new RoutedCommand();
         public static RoutedCommand ADCFreqCommand = new RoutedCommand();
 
@@ -84,6 +85,15 @@ namespace ModulTest
             worker.RunWorkerAsync();
         }
 
+        private void DebugSignalCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            Plot1.Visibility = Visibility.Collapsed;
+            worker = new BackgroundWorker();
+            worker.DoWork += worker_DoDebugSignalCommand;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.WorkerReportsProgress = true;
+            worker.RunWorkerAsync();
+        }
 
         void worker_DoGetADC1Values(object sender, DoWorkEventArgs e)
         {
@@ -101,6 +111,13 @@ namespace ModulTest
             });
         }
 
+        void worker_DoDebugSignalCommand(object sender, DoWorkEventArgs e)
+        {
+            TryCatch(() =>
+            {
+                serTest.GetChannel3ValuesOnce();
+            });
+        }
 
         public void setProgressValue(double? percent)
         {

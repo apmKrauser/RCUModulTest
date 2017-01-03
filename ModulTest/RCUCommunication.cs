@@ -346,6 +346,9 @@ namespace ModulTest
                 case 2:
                     rc = RCUCommand.GetAndSendADC2;
                     break;
+                case 3: // channel 3 used for debug signal
+                    rc = RCUCommand.ProcessData;
+                    break;
                 default:
                     return RxArray;
             }
